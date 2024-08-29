@@ -2,3 +2,7 @@
     --accent: darkcyan;
     --sans-font: Shabnam,Tahoma,"DejaVu Sans",helvetica,arial,freesans,sans-serif;
 }
+
+article {
+    text-align: justify;
+}
