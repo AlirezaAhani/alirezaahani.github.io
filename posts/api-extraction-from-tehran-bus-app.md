@@ -11,7 +11,7 @@ A few years ago, while riding on a bus I saw an infographic about this applicati
 The initial screen tells you to register using your phone number and a code sent to it using SMS. A very common pattern for applications in Iran. After that it took some time to download a database of all stations, and it finally opened.  
   
 <figure>
-  <img alt="Screenshot of application" src="/public/images/api-extraction-from-tehran-bus-app/Screenshot_Tehran_Public_Transport.png" style="height: 700px !important;"/>
+  <img alt="Screenshot of application" src="/public/images/api-extraction-from-tehran-bus-app/Screenshot_Tehran_Public_Transport.png" style="max-height: 700px !important;"/>
   <figcaption>Showing میدان انقلاب (Code 4613) station  on routes پایانه معین, ETA for that station is 8 minutes</figcaption>
 </figure>
   
@@ -215,7 +215,7 @@ It is very basic and has hard-coded translations for Persian, it also doesn't ha
 Fortunately the app does work and the ETAs are accurate to around 1 minute, which is enough for planning things.
   
 <figure>
-  <img alt="Android App" src="/public/images/api-extraction-from-tehran-bus-app/Screenshot_android_app.png" style="height: 700px !important;"/>
+  <img alt="Android App" src="/public/images/api-extraction-from-tehran-bus-app/Screenshot_android_app.png" style="max-height: 700px !important;"/>
   <figcaption>Android App showing the ETA for ولی عصر station</figcaption>
 </figure>
   
