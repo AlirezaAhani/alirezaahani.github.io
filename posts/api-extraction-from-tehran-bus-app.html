@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8">
+  <title>API Extraction from Tehran Public Transport Application</title>
+<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/shabnam-font@v5.0.1/dist/font-face.css">
+<link rel="stylesheet" href="https://alirezaahani.github.io/public/css/styles.css">
+  </head>
+  <body>
+    <header>
+      <h1><a href="/">Alireza's blog</a></h1>
+<nav>
+    <a href="/">Index</a>
+    <a href="https://github.com/alirezaahani">Github</a>
+    <a href="/rss.xml">RSS</a>
+</nav>
+
+    </header>
+    <main>
+      <article>
+        <h2>API Extraction from Tehran Public Transport Application</h2>
+        <time pubdate="pubdate">2024/08/29 10:30:00</time>
+        <h3>Introduction</h3>
+<p>A few years ago, while riding on a bus I saw an infographic about this application which could tell you the ETA for the buses in Tehran. Intrigued by this claim, I installed the app named <a href="https://play.google.com/store/apps/details?id=com.neda.buseta">Tehran Public Transport</a> on my phone.</p>
+<p>The inital screen tells you to register using your phone number and a code sent to it using SMS. A very common pattern for applications in Iran. After that it took some time to download a database of all stations, and it finally opened.</p>
+<figure>
+  <img alt="Screenshot of application" src="/public/images/api-extraction-from-tehran-bus-app/Screenshot_Tehran_Public_Transport.png" style="height: 700px !important;"/>
+  <figcaption>Showing میدان انقلاب (Code 4613) station  on routes پایانه معین, ETA for that station is 8 minutes</figcaption>
+</figure>
+<p>The app has two different types of interface, but it is not relevant to this post.<br />
+As far as I have tested and used this app, the ETA is pretty accurate, but it does perform very poor on some routes (Which the drivers could be to blame, but thats anthor discussion)</p>
+<h3>Motivation</h3>
+<p>Just curiosity!. Also the app claims to be able to do ETA for subway stations as well, but none of the subway stations are listed in the app. So I wanted to investigate that as well.<br />
+I use the subway nearly everyday twice, to get from home to other places, so the ETA could be useful.</p>
+<h3>Initial decompiling</h3>
+<p>For the first step, I decided to decompile the APK using <a href="https://github.com/skylot/jadx">jadx</a>, to obtain the APK, I used <a href="https://apps.evozi.com/apk-downloader/">evozi's apk downloader</a>.<br />
+Here is the result of decompiling the APK:</p>
+<figure>
+  <img alt="Jadx decompile" src="/public/images/api-extraction-from-tehran-bus-app/Screenshot_jadx_gui.png"/>
+  <figcaption>Jadx decompile result</figcaption>
+</figure>
+<p>The tracking and ETA seems to be coming from <a href="https://irantracking.com/">IranTracking</a> a company for GPS tracking of trucks and buses. Maybe they had a contract with the city?<br />
+The code seems pretty clean, surprisingly unlike most apps I have decompiled, the code is not very obfuscated and easy to read.<br />
+After some investigating, I found <code>com.irantracking.tehranbus.common.api</code> which could be interesting for our use.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">package </span><span style="color:#c0c5ce;">com.irantracking.tehranbus.common.api;
+</span><span style="color:#c0c5ce;"> 
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">com.irantracking.tehranbus.common.data.network.request.BusEtaRequest</span><span style="color:#c0c5ce;">;
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">com.irantracking.tehranbus.common.data.network.request.SubwayEtaRequest</span><span style="color:#c0c5ce;">;
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">com.irantracking.tehranbus.common.data.network.response.RouteStationData</span><span style="color:#c0c5ce;">;
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">java.util.List</span><span style="color:#c0c5ce;">;
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">kotlin.Metadata</span><span style="color:#c0c5ce;">;
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">org.jetbrains.annotations.NotNull</span><span style="color:#c0c5ce;">;
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">retrofit2.Call</span><span style="color:#c0c5ce;">;
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">retrofit2.http.Body</span><span style="color:#c0c5ce;">;
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">retrofit2.http.POST</span><span style="color:#c0c5ce;">;
+</span><span style="color:#c0c5ce;"> 
+</span><span style="color:#b48ead;">public interface </span><span style="color:#ebcb8b;">EtaApi </span><span style="color:#eff1f5;">{
+</span><span style="color:#eff1f5;">  @</span><span style="color:#bf616a;">POST</span><span style="color:#eff1f5;">(</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">BusStopETA</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#eff1f5;">)
+</span><span style="color:#eff1f5;">  @</span><span style="color:#bf616a;">NotNull
+</span><span style="color:#eff1f5;">  </span><span style="color:#ebcb8b;">Call</span><span style="color:#eff1f5;">&lt;</span><span style="color:#ebcb8b;">List</span><span style="color:#eff1f5;">&lt;</span><span style="color:#ebcb8b;">RouteStationData.BusRouteStationData</span><span style="color:#eff1f5;">&gt;&gt; </span><span style="color:#8fa1b3;">getETA</span><span style="color:#eff1f5;">(@</span><span style="color:#bf616a;">Body     </span><span style="color:#eff1f5;">@</span><span style="color:#bf616a;">NotNull </span><span style="color:#ebcb8b;">BusEtaRequest </span><span style="color:#bf616a;">body</span><span style="color:#eff1f5;">);
+</span><span style="color:#eff1f5;">  
+</span><span style="color:#eff1f5;">  @</span><span style="color:#bf616a;">POST</span><span style="color:#eff1f5;">(</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">SubwayStationETA</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#eff1f5;">)
+</span><span style="color:#eff1f5;">  @</span><span style="color:#bf616a;">NotNull
+</span><span style="color:#eff1f5;">  </span><span style="color:#ebcb8b;">Call</span><span style="color:#eff1f5;">&lt;</span><span style="color:#ebcb8b;">List</span><span style="color:#eff1f5;">&lt;</span><span style="color:#ebcb8b;">RouteStationData.SubwayRouteStationData</span><span style="color:#eff1f5;">&gt;&gt; </span><span style="color:#8fa1b3;">getSubwayETA</span><span style="color:#eff1f5;">(@</span><span style="color:#bf616a;">Body </span><span style="color:#eff1f5;">@</span><span style="color:#bf616a;">NotNull </span><span style="color:#ebcb8b;">SubwayEtaRequest </span><span style="color:#bf616a;">body</span><span style="color:#eff1f5;">);
+</span><span style="color:#eff1f5;">}
+</span></code></pre>
+<p>Looks like they are using <code>retrofit2</code> for their API calls and transforming them into objects. Interestingly there is also a <code>SubwayStationETA</code> API endpoint, but it looks like it is broken in the app.<br />
+With further inspection of the code, I found a url linking to a sqlite database, which all bus stations, their coordinates and names are saved.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">package </span><span style="color:#c0c5ce;">com.irantracking.tehranbus.common.api;
+</span><span style="color:#c0c5ce;">  
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">kotlin.Metadata</span><span style="color:#c0c5ce;">;
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">org.jetbrains.annotations.NotNull</span><span style="color:#c0c5ce;">;
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">retrofit2.Call</span><span style="color:#c0c5ce;">;
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">retrofit2.http.GET</span><span style="color:#c0c5ce;">;
+</span><span style="color:#c0c5ce;">  
+</span><span style="color:#b48ead;">public interface </span><span style="color:#ebcb8b;">StringApi </span><span style="color:#eff1f5;">{
+</span><span style="color:#eff1f5;">    @</span><span style="color:#bf616a;">GET</span><span style="color:#eff1f5;">(</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">http://www.irantracking.com/ETAAPP/ANDROID</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#eff1f5;">)
+</span><span style="color:#eff1f5;">    @</span><span style="color:#bf616a;">NotNull
+</span><span style="color:#eff1f5;">    </span><span style="color:#ebcb8b;">Call</span><span style="color:#eff1f5;">&lt;</span><span style="color:#ebcb8b;">String</span><span style="color:#eff1f5;">&gt; </span><span style="color:#8fa1b3;">getDatabaseAddress</span><span style="color:#eff1f5;">();
+</span><span style="color:#eff1f5;">}
+</span></code></pre>
+<p>Vising the page, it returns a database name<br />
+(e.g. <code>ECF2405141154.sqlite.gz</code>)<br />
+and it is appended to url to obtain a download link.<br />
+(<code>http://www.irantracking.com/ETAAPP/ANDROID/ECF2405141154.sqlite.gz</code>).<br />
+Opening the database, it has the following schema:</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">CREATE TABLE </span><span style="color:#8fa1b3;">Stations
+</span><span style="color:#c0c5ce;">  (
+</span><span style="color:#c0c5ce;">     StationCode </span><span style="color:#b48ead;">INTEGER PRIMARY KEY</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     StationName </span><span style="color:#b48ead;">TEXT</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     Longitude   </span><span style="color:#b48ead;">REAL</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     Latitude    </span><span style="color:#b48ead;">REAL</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     Address     </span><span style="color:#b48ead;">TEXT
+</span><span style="color:#c0c5ce;">  );
+</span><span style="color:#b48ead;">CREATE TABLE </span><span style="color:#8fa1b3;">Routes
+</span><span style="color:#c0c5ce;">  (
+</span><span style="color:#c0c5ce;">     RouteID         </span><span style="color:#b48ead;">INTEGER PRIMARY KEY</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     RouteCode       </span><span style="color:#b48ead;">INTEGER</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     Direction       </span><span style="color:#b48ead;">TEXT</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     RouteType       </span><span style="color:#b48ead;">INTEGER</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     OriginationName </span><span style="color:#b48ead;">TEXT</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     DestinationName </span><span style="color:#b48ead;">TEXT</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     Vertices        </span><span style="color:#b48ead;">TEXT
+</span><span style="color:#c0c5ce;">  );
+</span><span style="color:#b48ead;">CREATE TABLE </span><span style="color:#8fa1b3;">RouteStations
+</span><span style="color:#c0c5ce;">  (
+</span><span style="color:#c0c5ce;">     RouteID       </span><span style="color:#b48ead;">INTEGER</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     StationCode   </span><span style="color:#b48ead;">INTEGER</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     StationOrder  </span><span style="color:#b48ead;">INTEGER</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     IsLastStation </span><span style="color:#b48ead;">INTEGER</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     </span><span style="color:#b48ead;">PRIMARY KEY</span><span style="color:#c0c5ce;"> (RouteID, StationCode),
+</span><span style="color:#c0c5ce;">     </span><span style="color:#b48ead;">FOREIGN KEY</span><span style="color:#c0c5ce;">(RouteID) </span><span style="color:#b48ead;">REFERENCES</span><span style="color:#c0c5ce;"> Routes(RouteID),
+</span><span style="color:#c0c5ce;">     </span><span style="color:#b48ead;">FOREIGN KEY</span><span style="color:#c0c5ce;">(StationCode) </span><span style="color:#b48ead;">REFERENCES</span><span style="color:#c0c5ce;"> Stations(StationCode)
+</span><span style="color:#c0c5ce;">  );
+</span><span style="color:#b48ead;">CREATE TABLE </span><span style="color:#8fa1b3;">LastUpdate
+</span><span style="color:#c0c5ce;">  (
+</span><span style="color:#c0c5ce;">     LastUpdateLong </span><span style="color:#b48ead;">INTEGER PRIMARY KEY</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">     LastUpdateDate </span><span style="color:#b48ead;">TEXT
+</span><span style="color:#c0c5ce;">  ); 
+</span></code></pre>
+<p>A note about <code>Vertices</code>, it is just a array of (lat, lngs), flattened.</p>
+<h3>Subway API</h3>
+<p>The current bus ETA API works well, but I wanted to have subway eta as well, so I decided to focus on that.<br />
+The <code>SubwayEtaRequest</code> class is basically a dataclass with one attribute, <code>StationID</code>.<br />
+But after a lot of searching, I found the reason the app couldn't show subway station eta.<br />
+Unlike the bus ETA API, the subway ETA API uses the following API:</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">public interface </span><span style="color:#ebcb8b;">SubwayRouteStationApi </span><span style="color:#eff1f5;">{
+</span><span style="color:#eff1f5;">  @</span><span style="color:#bf616a;">POST</span><span style="color:#eff1f5;">(</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">SubwayRoutesStations</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#eff1f5;">)
+</span><span style="color:#eff1f5;">  @</span><span style="color:#bf616a;">NotNull
+</span><span style="color:#eff1f5;">  </span><span style="color:#ebcb8b;">Single</span><span style="color:#eff1f5;">&lt;</span><span style="color:#ebcb8b;">Response</span><span style="color:#eff1f5;">&lt;</span><span style="color:#ebcb8b;">SubwayRoutesStationsResponse</span><span style="color:#eff1f5;">&gt;&gt; </span><span style="color:#8fa1b3;">subwayRoutesStations</span><span style="color:#eff1f5;">();
+</span><span style="color:#eff1f5;">}
+</span></code></pre>
+<p><code>SubwayRoutesStationsResponse</code> is just a data class containing the station names, codes and routes.<br />
+To inspect the response from the server, I wrote this simple Python script:</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">requests
+</span><span style="color:#c0c5ce;">url = &quot;</span><span style="color:#a3be8c;">https://application2.irantracking.com/modsapi/api/PublicTransport/SubwayRoutesStations</span><span style="color:#c0c5ce;">&quot;
+</span><span style="color:#c0c5ce;">response = requests.</span><span style="color:#8fa1b3;">post</span><span style="color:#c0c5ce;">(url, </span><span style="color:#bf616a;">headers</span><span style="color:#c0c5ce;">={&quot;</span><span style="color:#a3be8c;">User-Agent</span><span style="color:#c0c5ce;">&quot;:&quot;</span><span style="color:#a3be8c;">okhttp3/10.0</span><span style="color:#c0c5ce;">&quot;})
+</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(response.text)
+</span></code></pre>
+<p>The server returns:</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">{&quot;</span><span style="color:#a3be8c;">ServerTime</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">1724921799615</span><span style="color:#c0c5ce;">, &quot;</span><span style="color:#a3be8c;">Routes</span><span style="color:#c0c5ce;">&quot;: [], &quot;</span><span style="color:#a3be8c;">Stations</span><span style="color:#c0c5ce;">&quot;: [], &quot;</span><span style="color:#a3be8c;">RouteStations</span><span style="color:#c0c5ce;">&quot;: []}
+</span></code></pre>
+<p>Yeah, the server returns nothing. And that's why it is not working. To further confirm this, I used <a href="https://emanuele-f.github.io/PCAPdroid/">PCAPdroid</a>, and that is also the case (I may write another blog post on this).<br />
+But maybe we could brute force it?</p>
+<h3>Bruteforcing the API</h3>
+<p>OK, Let's be honest, <strong>bruteforcing public free APIs is NOT OK</strong>, but this API is not even used in the app, so I don't think anyone would be bothered, and I am not going to abuse this API and flooding it with requests, just around 500 requests for once, and then it is done.<br />
+Tehran has around 160 stations currently, with more being built every year (hopefully). We have to start somewhere, so I tested this Python script:</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">requests
+</span><span style="color:#c0c5ce;">url = &quot;</span><span style="color:#a3be8c;">https://application2.irantracking.com/modsapi/api/PublicTransport/SubwayStationETA</span><span style="color:#c0c5ce;">&quot;
+</span><span style="color:#c0c5ce;">data = {&quot;</span><span style="color:#a3be8c;">StationID</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">}
+</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(requests.</span><span style="color:#8fa1b3;">post</span><span style="color:#c0c5ce;">(url, </span><span style="color:#bf616a;">json</span><span style="color:#c0c5ce;">=data, </span><span style="color:#bf616a;">headers</span><span style="color:#c0c5ce;">={&quot;</span><span style="color:#a3be8c;">User-Agent</span><span style="color:#c0c5ce;">&quot;:&quot;</span><span style="color:#a3be8c;">okhttp3/10.0</span><span style="color:#c0c5ce;">&quot;}).text)
+</span></code></pre>
+<p>Which returns: </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">اشکال در ساختار دیتای ورودی</span><span style="color:#c0c5ce;">&quot;
+</span></code></pre>
+<p>It translates to &quot;Error input structure&quot;. But maybe station ids don't start from 0? I tried <code>{&quot;StationID&quot;: 1}</code>.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">[
+</span><span style="color:#c0c5ce;">    {
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">ID</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">7</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">StationID</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">RouteID</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">3</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">RouteCode</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">null</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">OriginationName</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">تجریش</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">DestinationName</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">کهریزک</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">StationOrder</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">7</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">StationName</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">شهید حقانی</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">Details</span><span style="color:#c0c5ce;">&quot;: [
+</span><span style="color:#c0c5ce;">            {
+</span><span style="color:#c0c5ce;">                &quot;</span><span style="color:#a3be8c;">ETA</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">4 دقیقه</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">                &quot;</span><span style="color:#a3be8c;">ETAValue</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">4</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">                &quot;</span><span style="color:#a3be8c;">ETAValueText</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">4</span><span style="color:#c0c5ce;">&quot;
+</span><span style="color:#c0c5ce;">            }
+</span><span style="color:#c0c5ce;">        ]
+</span><span style="color:#c0c5ce;">    },
+</span><span style="color:#c0c5ce;">    {
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">ID</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">37</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">StationID</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">RouteID</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">103</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">RouteCode</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">null</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">OriginationName</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">کهریزک</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">DestinationName</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">تجریش</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">StationOrder</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">24</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">StationName</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">شهید حقانی</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">Details</span><span style="color:#c0c5ce;">&quot;: [
+</span><span style="color:#c0c5ce;">            {
+</span><span style="color:#c0c5ce;">                &quot;</span><span style="color:#a3be8c;">ETA</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">1 دقیقه</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">                &quot;</span><span style="color:#a3be8c;">ETAValue</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">                &quot;</span><span style="color:#a3be8c;">ETAValueText</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">1</span><span style="color:#c0c5ce;">&quot;
+</span><span style="color:#c0c5ce;">            }
+</span><span style="color:#c0c5ce;">        ]
+</span><span style="color:#c0c5ce;">    }
+</span><span style="color:#c0c5ce;">]
+</span></code></pre>
+<p>This looks like a response we could use :)
+Each station returns two responses, because one is from <code>&quot;کهریزک&quot;</code> to <code>&quot;تجریش&quot;</code> and the other in reverse. 
+<code>&quot;RouteCode&quot;</code> is stil <code>null</code>, but it's at least progress. I tried the first 10, they also do work.<br />
+I wrote some Python to check the first 500 ids and found these station ids are valid (with their names as the values).</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">{
+</span><span style="color:#c0c5ce;">  &quot;</span><span style="color:#a3be8c;">شهید حقانی</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">  &quot;</span><span style="color:#a3be8c;">شهید همت</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">  </span><span style="color:#65737e;">// -- snip --
+</span><span style="color:#c0c5ce;">  &quot;</span><span style="color:#a3be8c;">قائم</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">143</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">  &quot;</span><span style="color:#a3be8c;">پايانه ۴و۶ فرودگاه مهرآباد</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">149</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">  &quot;</span><span style="color:#a3be8c;">مهدیه</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">150
+</span><span style="color:#c0c5ce;">}
+</span></code></pre>
+<p>It seems they are all sequential, But it is missing some stations and it is also old!<br />
+Tehran's subway has 7 active lanes. It seems to be missing the newer 6 and 7 lanes. Also the ETA doesn't work for lane 4. (Returns &quot;---&quot; for the eta value.)<br />
+Maybe that is why they haven't enabled this feature in their app.</p>
+<h3>Android App for subway ETA</h3>
+<p>I wrote a simple android app using Kotlin and <a href="https://developer.android.com/compose">Jetpack Compose</a>, to check the accuracy of the ETA while I'm traveling.<br />
+It is very barebones and has hardcoded translations for Persian, it also doens't have an icon, but hey it gets the job done.<br />
+Fortunately the app does work and the ETAs are accurate to around 1 mintue, which is enough for planning things.</p>
+<figure>
+  <img alt="Android App" src="/public/images/api-extraction-from-tehran-bus-app/Screenshot_android_app.png" style="height: 700px !important;"/>
+  <figcaption>Android App showing the ETA for ولی عصر station</figcaption>
+</figure>
+
+      </article>
+    </main>
+    <footer>
+      <div class="inner">
+  <p>Updated at: 2024/08/29 10:14:20</p>
+</div>
+    </footer>
+  </body>
+</html>
