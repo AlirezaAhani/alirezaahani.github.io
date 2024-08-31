@@ -4,6 +4,7 @@ layout: posts.liquid
 is_draft: false
 published_date: 2024-08-29 10:30:00 +0330
 description: Extracting bus and subway ETA APIs from Tehran Public Transport
+categories: ['Technology', 'Android']
 ---
 ### Introduction
 A few years ago, while riding on a bus I saw an infographic about this application which could tell you the ETA for the buses in Tehran. Intrigued by this claim, I installed the app named [Tehran Public Transport](https://play.google.com/store/apps/details?id=com.neda.buseta) on my phone.  

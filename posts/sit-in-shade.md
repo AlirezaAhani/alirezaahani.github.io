@@ -4,6 +4,7 @@ layout: posts.liquid
 is_draft: false
 published_date: 2024-08-31 13:10:00 +0330
 description: Simple web app to calculate which side of vehicle to sit to minimize sun exposure.
+categories: ['Technology', 'Web Development']
 ---
 ### Overview of the Application
   

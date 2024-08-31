@@ -1,8 +1,16 @@
 :root {
     --accent: darkcyan;
-    --sans-font: Shabnam,Tahoma,"DejaVu Sans",helvetica,arial,freesans,sans-serif;
+    --sans-font: Gandom, Tahoma, "DejaVu Sans", helvetica, arial, freesans, sans-serif;
 }
 
 article {
     text-align: justify;
+}
+
+.post-info time span {
+    color: #a8a8a8;
+}
+
+.post-info h2 {
+    margin-bottom: 0;
 }
