@@ -14,3 +14,7 @@ article {
 .post-info h2 {
     margin-bottom: 0;
 }
+
+mjx-container.MathJax {
+    overflow-x: scroll;
+}
