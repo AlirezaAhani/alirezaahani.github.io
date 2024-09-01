@@ -2,16 +2,8 @@
 <meta charset="utf-8">
 <title>{{ site.title }} :: {{ page.title }}</title>
 <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
-<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/gandom-font@v0.8/dist/font-face.css">
-<link rel="stylesheet" href="{{site.base_url}}/public/css/styles.css">
-<script>
-    MathJax = {
-      tex: {
-        inlineMath: [
-          ["$", "$"],
-          ["\\(", "\\)"],
-        ],
-      },
-    };
-  </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" integrity="sha512-EtUjpk/hY3NXp8vfrPUJWhepp1ZbgSI10DKPzfd+3J/p2Wo89JRBvQIdk3Q83qAEhKOiFOsYfhqFnOEv23L+dA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="/public/css/styles.css">
+<link rel="alternate" type="application/rss+xml" title="RSS Feed for {{ site.title }}" href="{{ site.base_url }}/rss.xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">

@@ -1,17 +1,34 @@
----
-layout: default.liquid
----
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% include "head.liquid" %}
+  </head>
+  <body>
+    <header>
+      {% include "header.liquid" %}
+    </header>
+    <main>
+      <section>
+        Blog posts: 
+        <ol reversed>
+         {% for post in collections.posts.pages %}
+          <li>
+            <a href="{{ post.permalink }}">{{ post.title }}</a>
+            <time pubdate="pubdate"> - {{ post.published_date | date: "%Y/%m/%d" }}</time>
+            {% if post.categories.size > 0 %}<span>- {{ post.categories | join: ", " }}</span> {% endif %}
+          </li>
+          {% endfor %}
+        </ol>
+      </section>
 
-<section>
-<div>
-
-   {% for post in collections.posts.pages %}
-    <section>
-      <h2><a href="{{ post.permalink }}">{{ post.title }}</a></h2>
-      <time pubdate="pubdate">Published at: {{ post.published_date | date: "%Y/%m/%d %H:%M:%S" }}</time>
-      {% if post.description != "" %}<p>{{ post.description }}</p>{% elsif post.excerpt %}<p>{{ post.excerpt }}</p>{% else %}<br />{% endif %}
-    </section>
-
-   {% endfor %}
-</div>
-</section>
+      Contact: 
+        <ul>
+          <li>Email: alirezaahani1386 [at] gmail [dot] com</li>
+          <li>Telegram: @alirezaahani</li>
+        </ul>
+    </main>
+    <footer>
+      {% include "footer.liquid" %}
+    </footer>
+  </body>
+</html>

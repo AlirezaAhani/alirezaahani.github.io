@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     {% include "head.liquid" %}
     <meta name="description" content="{{ page.description  }}">
@@ -11,13 +11,13 @@
     </header>
     <main>
       <article>
-        <div class="post-info">  
+        <div>  
           <h2>{{ page.title }}</h2>
           <time pubdate="pubdate">Published at: {{ page.published_date | date: "%Y/%m/%d %H:%M:%S" }}</time>
           {% if page.categories.size > 0 %}<span>- Category: {{ page.categories | join: ", " }}</span> {% endif %}
         </div>
         <p>{{ page.description  }}</p>
-        {{ page.excerpt }}
+        {{ page.content }}
       </article>
     </main>
     <footer>

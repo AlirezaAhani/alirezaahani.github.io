@@ -1,3 +1,12 @@
-<div class="inner">
-  <p>Updated at: {{ site.time | date: "%Y/%m/%d %H:%M:%S" }}</p>
-</div>
+<p>Updated at: {{ site.time | date: "%Y/%m/%d %H:%M:%S" }}</p>
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [
+        ["$", "$"],
+        ["\\(", "\\)"],
+      ],
+    },
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" integrity="sha512-EtUjpk/hY3NXp8vfrPUJWhepp1ZbgSI10DKPzfd+3J/p2Wo89JRBvQIdk3Q83qAEhKOiFOsYfhqFnOEv23L+dA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
