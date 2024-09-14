@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8">
+<title>Alireza's blog :: Rooting Huawei Y5 Prime 2018 (DRA-LX2)</title>
+<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+<link rel="stylesheet" href="/public/css/styles.css">
+<link rel="alternate" type="application/rss+xml" title="RSS Feed for Alireza's blog" href="https://alirezaahani.github.io/rss.xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">
+    <meta name="description" content="Steps to rooting an old Android phone">
+    <meta name="category" content="Android, Magisk">
+  </head>
+  <body>
+    <header>
+      <h1>Alireza's blog</h1>
+<nav>
+    <a href="/">Index</a>
+    <a href="/pages/about.html">About</a>
+    <a href="https://github.com/alirezaahani">Github</a>
+    <a href="/rss.xml">RSS</a>
+</nav>
+
+    </header>
+    <main>
+      <article>
+        <div>  
+          <h2>Rooting Huawei Y5 Prime 2018 (DRA-LX2)</h2>
+          <time pubdate="pubdate">Published at: 2024/09/14 20:30:00</time>
+          <span>- Category: Android, Magisk</span> 
+        </div>
+        <p>Steps to rooting an old Android phone</p>
+        <p class="notice" style="color: red">
+Attention: You are responsible for any damages to your device, read the article with CARE and replicate it after FULLY reading it. 
+</p>
+<h2>Needed software and hardware</h2>
+<ul>
+<li>Your DRA-LX3 phone</li>
+<li>USB Cable with data as well</li>
+<li>A Windows 10 or 11 machine (Have not tested this on Linux)</li>
+<li>Internet connection</li>
+</ul>
+<h2>Step 1: Enabling Developer mode and installing ADB</h2>
+<p>First you need to enable developer mode in your device, this is easily done by navigating to <code>Settings -&gt; System -&gt; About Phone</code>.<br />
+In this screen click on <code>Build number</code> many times until you see <code>You are now a developer!</code>.<br />
+Then navigate to <code>Settings -&gt; System -&gt; Developer options</code>, enable <code>OEM Unlocking</code> and <code>USB debugging</code>.</p>
+<p>Second you need to install <code>ADB</code> on your Windows machine, you can use <code>winget</code> to do so using this: </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#8fa1b3;">winget</span><span style="color:#c0c5ce;"> install</span><span style="color:#bf616a;"> --id</span><span style="color:#c0c5ce;"> Google.PlatformTools
+</span></code></pre>
+<p>Connect your device via the USB Cable, and run this command, you should see a popup on your phone telling you to give permission. </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#8fa1b3;">adb</span><span style="color:#c0c5ce;"> devices
+</span></code></pre>
+<h2>Step 2: Bypassing boot-rom protection</h2>
+<h3>Install (once)</h3>
+<p>Devices with MTK SoC's have boot-rom protection preventing us from using tools like SP Flash, luckily there are exploits to bypass this, thanks to <a href="https://github.com/MTK-bypass">MTK Bypass</a>. 
+First we need to install Python, we can again use <code>winget</code> for this task as well by running this command: </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#8fa1b3;">winget</span><span style="color:#c0c5ce;"> install python.python.3.9
+</span></code></pre>
+<p>Any modern version should work.<br />
+Then you need to install <a href="https://github.com/daynix/UsbDk/releases">UsbDk</a>, click on the link and download the latest MSI file for your machine.<br />
+Finally download <a href="https://github.com/MTK-bypass/bypass_utility/archive/refs/heads/master.zip">Bypass Utility</a> and <a href="https://github.com/MTK-bypass/exploits_collection/archive/refs/heads/master.zip">Exploits Collection</a>.<br />
+Extract these folders and place the folder containing the <code>payloads</code> folder and <code>default_config.json5</code> file next to the <code>src</code> folder.</p>
+<h3>Usage</h3>
+<p>Now we can use the tool to unlock the boot-rom protection, notice that you will need to do this a few more times as well. Only repeat these steps. </p>
+<ol>
+<li>Turn off your device while it's NOT connected to your machine. </li>
+<li>Hold down the <kbd>Volume down</kbd> button on your phone. Do these steps while hold that.</li>
+<li>Navigate to the folder containing the <code>main.py</code> file and run this command: </li>
+</ol>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#8fa1b3;">python</span><span style="color:#c0c5ce;"> main.py
+</span></code></pre>
+<ol start="4">
+<li>Connect your phone to the machine (still holding the <kbd>Volume down</kbd> button).
+You will see an output similar to this: </li>
+</ol>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">[2024-09-14 17:04:00.884640] Waiting for device
+</span><span style="color:#c0c5ce;">[2024-09-14 17:04:02.972299] Found device = 0e8d:0003
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">[2024-09-14 17:04:03.219234] Device hw code: 0x699
+</span><span style="color:#c0c5ce;">[2024-09-14 17:04:03.220232] Device hw sub code: 0x8a00
+</span><span style="color:#c0c5ce;">[2024-09-14 17:04:03.222458] Device hw version: 0xca00
+</span><span style="color:#c0c5ce;">[2024-09-14 17:04:03.223495] Device sw version: 0x0
+</span><span style="color:#c0c5ce;">[2024-09-14 17:04:03.224173] Device secure boot: True
+</span><span style="color:#c0c5ce;">[2024-09-14 17:04:03.225168] Device serial link authorization: True
+</span><span style="color:#c0c5ce;">[2024-09-14 17:04:03.226165] Device download agent authorization: False
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">[2024-09-14 17:04:03.227163] Disabling watchdog timer
+</span><span style="color:#c0c5ce;">[2024-09-14 17:04:03.231333] Disabling protection
+</span><span style="color:#c0c5ce;">[2024-09-14 17:04:03.267116] Protection disabled
+</span></code></pre>
+<p>Once you see <strong>Protection disabled</strong>, the protection is off for the next boot. You can continue the steps.</p>
+<h2>Step 3: Downloading the boot image.</h2>
+<p>We need to download the device's original boot image to our machine, to do so we need <a href="https://spflashtool.com/">SP Flash Tool</a>, download the software from the link (the latest version), and run <code>flash_tool.exe</code>.<br />
+You need the scatter file for your phone to download the boot image, download <a href="https://gist.githubusercontent.com/alirezaahani/51b94a6d6d570d02bdc6d8c433e3245e/raw/83ba75eacb2356bfe4efa87ecb060fa7404c2d64/MT6739_Android_scatter.txt">this text file</a> and save it somewhere you can relocate.<br />
+Under the <code>Download</code> tab in SP Flash tool, locate the option <code>Scatter-loading File</code> and choose the address for the text file you downloaded.<br />
+Click the <code>Download</code> button there and enter these values for the download options: </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">Start: 0x15800000
+</span><span style="color:#c0c5ce;">Length: 0x1800000
+</span></code></pre>
+<p>Save the boot image as <code>boot.img</code> and save it somewhere safe.</p>
+<h2>Step 4: Patch the boot image.</h2>
+<p>Move the <code>boot.img</code> to a SD Card and put in your phone. Turn your phone on.<br />
+Download and install the <a href="https://github.com/topjohnwu/Magisk">Magisk</a> app from their github page.<br />
+Open the app, in the home page click on <code>Magisk -&gt; Install</code>.<br />
+In the new page turn on the <code>Preserve AVB 2.0/dm-verity</code> option.<br />
+Select the <code>Select and patch a file</code> method and select your <code>boot.img</code> file. Magisk will patch the boot image and save it inside the phone. Copy it to your SD Card and move the patched file to your machine. </p>
+<h2>Step 5: Write the boot image.</h2>
+<p>First we need to get rid of boot-rom protection again. Use <strong>Step 3</strong> again to help.<br />
+After that open SP Flash tool and press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>V</kbd>. From the <code>Window</code> menu select <code>Write Memory</code>.<br />
+In the <code>Write Memory</code> tab, locate <code>File path:</code> and select the patched image file from the pervious step.<br />
+Fill the <code>Begin Address</code> input with this value: <code>0x15800000</code><br />
+Click <code>Write Memory</code> wait, after it's finished, turn on your phone.</p>
+<h2>Step 6: Your device is now rooted!</h2>
+<p>From now on you will see this message on boot-up: </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">Your device has failed verification and may not work properly. 
+</span><span style="color:#c0c5ce;">To learn more, visit: 
+</span><span style="color:#c0c5ce;">...
+</span></code></pre>
+<p>Do not worry, just press the power button and your phone will boot-up. Unfortunately I haven't found a way to fix this yet and you will need to do this every time.<br />
+Have fun messing around with your rooted Android phone.<br />
+If you had any problems following the steps contact me and I will try to help if I can.<br />
+I you find any custom roms or ASOP or any other interesting thing to do with this phone, be sure to contact me.</p>
+
+      </article>
+    </main>
+    <footer>
+      <p>Updated at: 2024/09/14 17:40:30</p>
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [
+        ["$", "$"],
+        ["\\(", "\\)"],
+      ],
+    },
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" integrity="sha512-EtUjpk/hY3NXp8vfrPUJWhepp1ZbgSI10DKPzfd+3J/p2Wo89JRBvQIdk3Q83qAEhKOiFOsYfhqFnOEv23L+dA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </footer>
+  </body>
+</html>
