@@ -1,10 +1,6 @@
 :root {
-    --accent: darkcyan;
-    --sans-font: "Vazirmatn", Tahoma, "DejaVu Sans", helvetica, arial, freesans, sans-serif;
-}
-
-article p {
-    text-align: justify;
+    --accent: #008b8b;
+    --sans-font: Tahoma, "DejaVu Sans", helvetica, arial, freesans, sans-serif;
 }
 
 .post-info time span {
