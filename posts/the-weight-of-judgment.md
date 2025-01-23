@@ -2,7 +2,7 @@
 title: The Weight of Judgment
 layout: posts.liquid
 is_draft: false
-published_date: 2024-01-23 20:45:00 +0330
+published_date: 2025-01-23 20:45:00 +0330
 description: Honest reflection on myself.
 categories: ['Personal', 'Mental Health']
 ---
