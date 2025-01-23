@@ -228,3 +228,14 @@ After processing the entire route, the application aggregates the results and de
 ### Limitations and Future Enhancements
   
 While the application provides useful guidance, it currently doesn’t account for foctors like real-time traffic, varying speeds, or route changes that could change the duration of route and the side of the sun. The sun's position is calculated based on fixed intervals along the route without considering these variables.
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [
+        ["$", "$"],
+        ["\\(", "\\)"],
+      ],
+    },
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" integrity="sha512-EtUjpk/hY3NXp8vfrPUJWhepp1ZbgSI10DKPzfd+3J/p2Wo89JRBvQIdk3Q83qAEhKOiFOsYfhqFnOEv23L+dA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
